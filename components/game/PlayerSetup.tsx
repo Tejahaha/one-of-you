@@ -4,7 +4,7 @@ import { useState, useRef } from "react";
 import { useGame } from "@/lib/game/GameContext";
 import { useSavedPlayers } from "@/lib/game/useSavedPlayers";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Plus, Play, UserPlus, Trash2, Users, Crown } from "lucide-react";
+import { X, Plus, Play, UserPlus, Trash2, Users, Crown, ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { spring, playerCardMotion, shakeX } from "@/lib/motion";
 
@@ -82,9 +82,20 @@ export default function PlayerSetup() {
                 </div>
             </header>
 
-            {/* Content */}
-            <div className="flex-1 overflow-hidden flex flex-col p-4 sm:p-6 lg:p-8 relative z-10">
-                <div className="max-w-2xl mx-auto w-full flex-1 flex flex-col">
+            {/* Back button */}
+            <div className="px-4 sm:px-6 lg:px-8 pt-2">
+                <button
+                    onClick={() => dispatch({ type: "RESET" })}
+                    className="flex items-center gap-2 text-sm font-bold text-neutral-500 hover:text-yellow-500 transition-colors"
+                >
+                    <ArrowLeft className="w-4 h-4" />
+                    Back to Home
+                </button>
+            </div>
+
+            {/* Content - Scrollable area */}
+            <div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 relative z-10">
+                <div className="max-w-2xl mx-auto w-full">
                     {/* Saved Players Toggle */}
                     {!isLocked && isLoaded && availableSavedPlayers.length > 0 && (
                         <button
@@ -112,7 +123,7 @@ export default function PlayerSetup() {
                                         <Trash2 className="w-3 h-3" /> Clear all
                                     </button>
                                 </div>
-                                <div className="flex flex-wrap gap-2">
+                                <div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto">
                                     {availableSavedPlayers.map((name) => (
                                         <motion.button
                                             key={name}
@@ -128,61 +139,112 @@ export default function PlayerSetup() {
                         )}
                     </AnimatePresence>
 
-                    {/* Player List */}
-                    <div className="flex-1 overflow-y-auto space-y-2 pb-4">
-                        {state.players.length === 0 && (
-                            <div className="text-center py-12 sm:py-16">
-                                <div className="w-16 h-16 sm:w-20 sm:h-20 border-2 border-dashed border-neutral-700 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <Users className="w-7 h-7 sm:w-8 sm:h-8 text-neutral-600" />
-                                </div>
-                                <p className="text-neutral-500 text-sm font-medium mb-1">
-                                    No players yet
-                                </p>
-                                <p className="text-neutral-600 text-xs">
-                                    Add at least 3 players to start
-                                </p>
+                    {/* Player List - Compact mode for 6+ players */}
+                    {state.players.length === 0 ? (
+                        <div className="text-center py-12 sm:py-16">
+                            <div className="w-16 h-16 sm:w-20 sm:h-20 border-2 border-dashed border-neutral-700 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <Users className="w-7 h-7 sm:w-8 sm:h-8 text-neutral-600" />
                             </div>
-                        )}
-                        <AnimatePresence mode="popLayout">
-                            {state.players.map((player, index) => (
-                                <motion.div
-                                    layout
-                                    key={`${player}-${index}`}
-                                    variants={playerCardMotion}
-                                    initial="initial"
-                                    animate="animate"
-                                    exit="exit"
-                                    className="flex items-center justify-between card-elevated p-3 sm:p-4 relative overflow-hidden group"
-                                >
-                                    {/* Number badge */}
-                                    <div className="flex items-center gap-3">
-                                        <div className={cn(
-                                            "w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center flex-shrink-0 font-black text-sm sm:text-base rounded",
-                                            index === 0 ? "bg-yellow-500/20 text-yellow-500 border border-yellow-500/30" : "bg-neutral-800 text-neutral-500 border border-neutral-700"
-                                        )}>
-                                            {index === 0 ? <Crown className="w-4 h-4" /> : index + 1}
-                                        </div>
-                                        <span className="text-base sm:text-lg font-bold text-white">{player}</span>
-                                    </div>
-                                    {!isLocked && (
-                                        <motion.button
-                                            whileTap={{ scale: 0.85 }}
-                                            onClick={() => dispatch({ type: "REMOVE_PLAYER", index })}
-                                            className="p-2 hover:bg-red-500/20 rounded-full transition-colors opacity-50 group-hover:opacity-100"
+                            <p className="text-neutral-500 text-sm font-medium mb-1">
+                                No players yet
+                            </p>
+                            <p className="text-neutral-600 text-xs">
+                                Add at least 3 players to start
+                            </p>
+                        </div>
+                    ) : state.players.length >= 6 ? (
+                        /* Compact flex-wrap layout for many players */
+                        <div className="mb-4">
+                            <div className="flex items-center gap-2 mb-3">
+                                <span className="text-xs font-bold text-neutral-500 uppercase tracking-wider">
+                                    Players ({state.players.length})
+                                </span>
+                            </div>
+                            <div className="flex flex-wrap gap-2">
+                                <AnimatePresence mode="popLayout">
+                                    {state.players.map((player, index) => (
+                                        <motion.div
+                                            layout
+                                            key={`${player}-${index}`}
+                                            initial={{ scale: 0.8, opacity: 0 }}
+                                            animate={{ scale: 1, opacity: 1 }}
+                                            exit={{ scale: 0.8, opacity: 0 }}
+                                            className={cn(
+                                                "flex items-center gap-2 px-3 py-2 rounded-lg group",
+                                                index === 0
+                                                    ? "bg-yellow-500/20 border border-yellow-500/30"
+                                                    : "bg-neutral-800 border border-neutral-700"
+                                            )}
                                         >
-                                            <X className="w-4 h-4 sm:w-5 sm:h-5 text-neutral-400 hover:text-red-500 transition-colors" />
-                                        </motion.button>
-                                    )}
-                                </motion.div>
-                            ))}
-                        </AnimatePresence>
-                    </div>
+                                            <span className={cn(
+                                                "text-xs font-black",
+                                                index === 0 ? "text-yellow-500" : "text-neutral-500"
+                                            )}>
+                                                {index === 0 ? <Crown className="w-3 h-3" /> : `#${index + 1}`}
+                                            </span>
+                                            <span className="text-sm font-bold text-white">{player}</span>
+                                            {!isLocked && (
+                                                <button
+                                                    onClick={() => dispatch({ type: "REMOVE_PLAYER", index })}
+                                                    className="opacity-50 group-hover:opacity-100 hover:text-red-500 transition-all ml-1"
+                                                >
+                                                    <X className="w-3 h-3" />
+                                                </button>
+                                            )}
+                                        </motion.div>
+                                    ))}
+                                </AnimatePresence>
+                            </div>
+                        </div>
+                    ) : (
+                        /* Standard card layout for fewer players */
+                        <div className="space-y-2 mb-4">
+                            <AnimatePresence mode="popLayout">
+                                {state.players.map((player, index) => (
+                                    <motion.div
+                                        layout
+                                        key={`${player}-${index}`}
+                                        variants={playerCardMotion}
+                                        initial="initial"
+                                        animate="animate"
+                                        exit="exit"
+                                        className="flex items-center justify-between card-elevated p-3 sm:p-4 relative overflow-hidden group"
+                                    >
+                                        {/* Number badge */}
+                                        <div className="flex items-center gap-3">
+                                            <div className={cn(
+                                                "w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center flex-shrink-0 font-black text-sm sm:text-base rounded",
+                                                index === 0 ? "bg-yellow-500/20 text-yellow-500 border border-yellow-500/30" : "bg-neutral-800 text-neutral-500 border border-neutral-700"
+                                            )}>
+                                                {index === 0 ? <Crown className="w-4 h-4" /> : index + 1}
+                                            </div>
+                                            <span className="text-base sm:text-lg font-bold text-white">{player}</span>
+                                        </div>
+                                        {!isLocked && (
+                                            <motion.button
+                                                whileTap={{ scale: 0.85 }}
+                                                onClick={() => dispatch({ type: "REMOVE_PLAYER", index })}
+                                                className="p-2 hover:bg-red-500/20 rounded-full transition-colors opacity-50 group-hover:opacity-100"
+                                            >
+                                                <X className="w-4 h-4 sm:w-5 sm:h-5 text-neutral-400 hover:text-red-500 transition-colors" />
+                                            </motion.button>
+                                        )}
+                                    </motion.div>
+                                ))}
+                            </AnimatePresence>
+                        </div>
+                    )}
+                </div>
+            </div>
 
+            {/* Fixed Footer - Input & Start Button */}
+            <div className="sticky bottom-0 bg-neutral-950/95 backdrop-blur-sm border-t border-neutral-800 p-4 sm:p-6 z-20">
+                <div className="max-w-2xl mx-auto space-y-3">
                     {/* Input */}
                     {!isLocked && (
                         <motion.div
                             animate={isShaking ? shakeX : {}}
-                            className="flex gap-2 mb-4"
+                            className="flex gap-2"
                         >
                             <input
                                 ref={inputRef}
@@ -214,7 +276,7 @@ export default function PlayerSetup() {
                         onClick={handleStartGame}
                         disabled={!canStart}
                         className={cn(
-                            "w-full py-5 sm:py-6 text-lg sm:text-xl font-black uppercase flex items-center justify-center gap-2 transition-all rounded-lg",
+                            "w-full py-4 sm:py-5 text-lg sm:text-xl font-black uppercase flex items-center justify-center gap-2 transition-all rounded-lg",
                             canStart
                                 ? "bg-white text-black glow-white hover:bg-neutral-100 cursor-pointer"
                                 : "bg-neutral-800/50 text-neutral-600 border border-neutral-700 cursor-not-allowed"

@@ -15,7 +15,7 @@ export default function Ignition() {
     return (
         <div className="flex flex-col items-center justify-center h-full bg-yellow-500 p-4 sm:p-6 md:p-8 lg:p-12 text-black relative overflow-hidden noise">
             {/* Background pattern */}
-            <div className="absolute inset-0 pattern-lines opacity-20 pointer-events-none" />
+            <div className="absolute inset-0 pattern-lines opacity-1 pointer-events-none" />
 
             {/* Ambient glow */}
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-white/10 rounded-full blur-[150px] pointer-events-none" />

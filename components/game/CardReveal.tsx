@@ -60,17 +60,12 @@ export default function CardReveal() {
         clearTimer();
         setIsPressed(false);
 
-        if (showContent) {
-            setCanInteract(false);
-            setShowContent(false);
-
-            setTimeout(() => {
-                dispatch({ type: "PASS_CARD", index: currentIndex });
-            }, 300);
-        } else {
+        // If not yet revealed, just reset progress
+        if (!showContent) {
             setPressProgress(0);
         }
-    }, [showContent, dispatch, currentIndex, clearTimer]);
+        // If revealed, content stays visible - user must click button to pass
+    }, [showContent, clearTimer]);
 
     useEffect(() => {
         return () => clearTimer();
@@ -85,10 +80,19 @@ export default function CardReveal() {
             <div className="absolute inset-0 pattern-dots opacity-50 pointer-events-none" />
 
             {/* Instructions Banner */}
-            <div className="relative bg-gradient-to-r from-yellow-600 via-yellow-500 to-yellow-600 p-3 sm:p-4 text-center z-10">
+            <div className={`relative p-3 sm:p-4 text-center z-10 ${showContent ? 'bg-green-500' : 'bg-gradient-to-r from-yellow-600 via-yellow-500 to-yellow-600'}`}>
                 <p className="text-sm sm:text-base font-black uppercase text-black flex items-center justify-center gap-2">
-                    <Hand className="w-4 h-4 sm:w-5 sm:h-5" />
-                    Hold card to reveal • Release to pass
+                    {showContent ? (
+                        <>
+                            <Unlock className="w-4 h-4 sm:w-5 sm:h-5" />
+                            Card Revealed • Memorize your role
+                        </>
+                    ) : (
+                        <>
+                            <Hand className="w-4 h-4 sm:w-5 sm:h-5" />
+                            Hold card to reveal your role
+                        </>
+                    )}
                 </p>
             </div>
 
@@ -227,16 +231,22 @@ export default function CardReveal() {
                                 </div>
                             </div>
 
-                            {/* Release instruction */}
+                            {/* Pass to next player button */}
                             {showContent && (
                                 <motion.div
                                     initial={{ opacity: 0, y: 10 }}
                                     animate={{ opacity: 1, y: 0 }}
-                                    className="bg-white text-black py-4 text-center"
+                                    className="bg-neutral-900 border-t-2 border-yellow-500 py-4 px-6"
                                 >
-                                    <p className="text-sm sm:text-base font-black uppercase">
-                                        Release to pass to next player →
-                                    </p>
+                                    <button
+                                        onClick={() => {
+                                            setCanInteract(false);
+                                            dispatch({ type: "PASS_CARD", index: currentIndex });
+                                        }}
+                                        className="w-full bg-yellow-500 hover:bg-yellow-400 text-black py-3 sm:py-4 font-black uppercase text-sm sm:text-base transition-colors cursor-pointer"
+                                    >
+                                        Got it! Pass to Next Player →
+                                    </button>
                                 </motion.div>
                             )}
                         </div>
