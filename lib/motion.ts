@@ -135,12 +135,13 @@ export const shakeX = {
 /* ------------------------------------------------------------------ */
 
 // Hero card floating entrance - dramatic float up from bottom
+// Optimized for mobile with simpler spring physics
 export const heroFloatIn: Variants = {
   initial: (config: { rotate?: number }) => ({
     y: "100vh",
-    scale: 0.9,
+    scale: 0.95,
     opacity: 0,
-    rotate: config.rotate ?? 0, // 👈 tilt applied ONCE
+    rotate: config.rotate ?? 0,
   }),
   animate: (config: {
     delay?: number;
@@ -150,12 +151,12 @@ export const heroFloatIn: Variants = {
     y: config.finalY ?? 0,
     scale: 1,
     opacity: 1,
-    rotate: config.rotate ?? 0, // 👈 SAME tilt, no correction
+    rotate: config.rotate ?? 0,
     transition: {
       type: "spring",
-      stiffness: 120,
-      damping: 14,
-      mass: 1,
+      stiffness: 100,    // Reduced from 120 - less physics calculations
+      damping: 16,       // Slightly increased for smoother stop
+      mass: 0.8,         // Reduced from 1 - faster, lighter feel
       delay: config.delay ?? 0,
     },
   }),
@@ -163,13 +164,38 @@ export const heroFloatIn: Variants = {
 
 
 // Continuous floating/bobbing animation for hero images
+// Disabled by default for performance - enable only when needed
 export const floatingAnimation = {
-  y: [0, -15, 0, -10, 0],
-  rotate: [0, -1, 0, 1, 0],
+  y: [0, -10, 0],  // Simplified keyframes
   transition: {
-    duration: 6,
-    ease: easing.float, // ✅ FIXED
+    duration: 4,        // Faster cycle = fewer frames
+    ease: "easeInOut",  // Simpler easing
     repeat: Infinity,
     repeatType: "loop" as const,
   },
+};
+
+/* ------------------------------------------------------------------ */
+/* PERFORMANCE UTILITIES */
+/* ------------------------------------------------------------------ */
+
+// Simple fade for lightweight transitions
+export const simpleFade: Variants = {
+  initial: { opacity: 0 },
+  animate: {
+    opacity: 1,
+    transition: { duration: 0.2 },
+  },
+  exit: {
+    opacity: 0,
+    transition: { duration: 0.15 },
+  },
+};
+
+// Mobile-optimized spring - use for touch devices
+export const springMobile: Transition = {
+  type: "spring",
+  stiffness: 400,
+  damping: 30,
+  mass: 0.8,
 };
