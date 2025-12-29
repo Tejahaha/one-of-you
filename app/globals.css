@@ -3,6 +3,10 @@
 :root {
   --background: #0a0a0a;
   --foreground: #fafafa;
+  --accent: #eab308;
+  --accent-glow: rgba(234, 179, 8, 0.25);
+  --danger: #dc2626;
+  --danger-glow: rgba(220, 38, 38, 0.3);
 }
 
 @theme inline {
@@ -42,8 +46,8 @@ main {
 
 /* Dot pattern background */
 .pattern-dots {
-  background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px);
-  background-size: 20px 20px;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+  background-size: 24px 24px;
 }
 
 /* Grid pattern background */
@@ -51,7 +55,7 @@ main {
   background-image:
     linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
     linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-  background-size: 40px 40px;
+  background-size: 48px 48px;
 }
 
 /* Diagonal lines pattern */
@@ -59,40 +63,104 @@ main {
   background-image: repeating-linear-gradient(-45deg,
       transparent,
       transparent 10px,
-      rgba(255, 255, 255, 0.02) 10px,
-      rgba(255, 255, 255, 0.02) 11px);
+      rgba(0, 0, 0, 0.15) 10px,
+      rgba(0, 0, 0, 0.15) 11px);
 }
 
 /* Cross pattern */
 .pattern-cross {
   background-image:
-    radial-gradient(circle, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
-  background-size: 24px 24px;
-  background-position: 0 0, 12px 12px;
+    radial-gradient(circle, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 32px 32px;
 }
 
-/* Corner decorations */
-.corner-decoration::before,
-.corner-decoration::after {
-  content: '';
-  position: absolute;
-  width: 20px;
-  height: 20px;
+/* Glow effects */
+.glow-yellow {
+  box-shadow:
+    0 0 15px var(--accent-glow),
+    0 0 25px var(--accent-glow),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.glow-yellow-subtle {
+  box-shadow: 0 0 20px var(--accent-glow);
+}
+
+.glow-red {
+  box-shadow:
+    0 0 20px var(--danger-glow),
+    0 0 40px var(--danger-glow);
+}
+
+.glow-white {
+  box-shadow:
+    0 0 20px rgba(255, 255, 255, 0.2),
+    0 0 40px rgba(255, 255, 255, 0.1);
+}
+
+/* Text glow */
+.text-glow-yellow {
+  text-shadow: 0 0 20px var(--accent-glow), 0 0 40px var(--accent-glow);
+}
+
+.text-glow-red {
+  text-shadow: 0 0 20px var(--danger-glow), 0 0 40px var(--danger-glow);
+}
+
+.text-glow-white {
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+/* Gradient borders */
+.border-gradient-yellow {
+  border-image: linear-gradient(135deg, #eab308, #fbbf24, #eab308) 1;
+}
+
+/* Enhanced card styles */
+.card-elevated {
+  background: linear-gradient(180deg, rgba(38, 38, 38, 1) 0%, rgba(23, 23, 23, 1) 100%);
   border: 3px solid rgba(255, 255, 255, 0.1);
 }
 
-.corner-decoration::before {
-  top: 0;
-  left: 0;
-  border-right: none;
-  border-bottom: none;
+.card-elevated-yellow {
+  background: linear-gradient(180deg, rgba(38, 38, 38, 1) 0%, rgba(23, 23, 23, 1) 100%);
+  border: 3px solid rgba(234, 179, 8, 0.3);
+  box-shadow: 0 0 40px rgba(234, 179, 8, 0.1);
 }
 
-.corner-decoration::after {
-  bottom: 0;
-  right: 0;
-  border-left: none;
-  border-top: none;
+/* Button enhancements */
+.btn-glow {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-glow::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.btn-glow:hover::before {
+  left: 100%;
+}
+
+/* Noise texture overlay */
+.noise {
+  position: relative;
+}
+
+.noise::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  opacity: 0.02;
+  pointer-events: none;
 }
 
 /* Shake animation */
@@ -118,10 +186,27 @@ main {
   animation: shake 0.3s ease-in-out;
 }
 
+/* Pulse glow animation */
+@keyframes pulse-glow {
+
+  0%,
+  100% {
+    box-shadow: 0 0 20px var(--accent-glow);
+  }
+
+  50% {
+    box-shadow: 0 0 40px var(--accent-glow), 0 0 60px var(--accent-glow);
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
 /* Scrollbar */
 .overflow-y-auto {
   scrollbar-width: thin;
-  scrollbar-color: #333 transparent;
+  scrollbar-color: #404040 transparent;
 }
 
 .overflow-y-auto::-webkit-scrollbar {
@@ -133,6 +218,10 @@ main {
 }
 
 .overflow-y-auto::-webkit-scrollbar-thumb {
-  background-color: #333;
+  background-color: #404040;
   border-radius: 3px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb:hover {
+  background-color: #525252;
 }
