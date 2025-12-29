@@ -3,7 +3,7 @@ import "./globals.css";
 import { GameProvider } from "@/lib/game/GameContext";
 
 export const metadata: Metadata = {
-  title: "ImpostWho?",
+  title: "ONE OF YOU",
   description: "A social deduction party game.",
 };
 
